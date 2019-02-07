@@ -16,6 +16,13 @@ export function changeOriginCurrency(newCurrency) {
   }
 }
 
+export function changeDestAmount(newAmount) {
+  return {
+    type: types.CHANGE_DESTINATION_AMOUNT,
+    data: { newAmount: newAmount }
+  }
+}
+
 export function changeDestinationCurrency(newCurrency) {
   return {
     type: types.CHANGE_DESTINATION_CURRENCY,
@@ -56,6 +63,42 @@ function _makeConvertionAjaxCall(payload, dispatch) {
 
 var makeConvertionAjaxCall = debounce(_makeConvertionAjaxCall, 300);
 
+export function fetchConversionRateAndFees(payload) {
+  return (dispatch) => {
+    makeConvertionAndFeesAjaxCall(payload, dispatch)
+  }
+}
+
+function _makeConvertionAndFeesAjaxCall(payload, dispatch) {
+  dispatch({
+    type: types.REQUEST_CONVERSION_RATE,
+    data: payload
+  });
+
+  // ajax call for destination amount
+  // originCurrency, destCurrency, originAmount
+  axios.get('/api/conversion', {
+    params: payload
+  })
+    .then((resp) => {
+      dispatch({
+        type: types.RECEIVED_CONVERSION_RATE_SUCCESS,
+        data: resp.data
+      });
+
+      var feePayload = Object.assign({}, payload, { originAmount: resp.data.originAmount });
+      dispatch(fetchFees(feePayload));
+    })
+    .catch((err) => {
+      dispatch({
+        type: types.RECEIVED_CONVERSION_RATE_FAILURE,
+        data: err
+      });
+    });
+}
+
+var makeConvertionAndFeesAjaxCall = debounce(_makeConvertionAndFeesAjaxCall, 300);
+
 export function fetchFees(payload) {
   return (dispatch) => {
     makeFeeAjaxCall(payload, dispatch)
@@ -79,12 +122,25 @@ function _makeFeeAjaxCall(payload, dispatch) {
         data: resp.data
       });
     })
-    .catch((err) => {
+    .catch((resp) => {
+      var msg = getErrorMgs(resp);
       dispatch({
-        type: types.RECEIVED_FEES_FAILURE,
-        data: err
+        type: types.RECEIVED_AJAX_CALL_FAILURE,
+        data: {msg: msg, failedCall: 'fees'}
       });
     });
 }
 
 var makeFeeAjaxCall = debounce(_makeFeeAjaxCall, 300);
+
+// Helper functions
+// we'll handle all failures the same
+function getErrorMgs(resp) {
+  var msg = 'Error. Please try again later.'
+
+  if (resp && resp.request && resp.request.status === 0) {
+    msg = 'Oh no! App appears to be offline.'
+  }
+
+  return msg
+}

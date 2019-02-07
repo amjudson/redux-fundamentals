@@ -23,6 +23,11 @@ function amount(state = defaultState, action) {
         ...state,
         originCurrency: action.data.newCurrency
       };
+    case (types.CHANGE_DESTINATION_AMOUNT):
+      return {
+        ...state,
+        destinationAmount: action.data.newAmount
+      };
     case (types.CHANGE_DESTINATION_CURRENCY):
       return {
         ...state,
@@ -32,6 +37,7 @@ function amount(state = defaultState, action) {
       return {
         ...state,
         conversionRate: action.data.xRate,
+        originAmount: action.data.originAmount,
         destinationAmount: action.data.destAmount
       }
     case (types.RECEIVED_CONVERSION_RATE_FAILURE):
