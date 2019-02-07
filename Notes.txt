@@ -1,0 +1,3 @@
+./node_modules/.bin/babel --plugins transform-react-jsx -o js/example1.min.js js/example1.js
+./node_modules/.bin/babel --plugins transform-react-jsx -o src/example1.min.js src/example1.js
+./node_modules/.bin/babel --plugins transform-react-jsx -w -o src/example2.min.js src/example2.js
