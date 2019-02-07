@@ -468,6 +468,17 @@ eval("/*!\n * Determine if an object is a Buffer\n *\n * @author   Feross Aboukh
 
 /***/ }),
 
+/***/ "./node_modules/json-stringify-safe/stringify.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/json-stringify-safe/stringify.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("exports = module.exports = stringify\nexports.getSerialize = serializer\n\nfunction stringify(obj, replacer, spaces, cycleReplacer) {\n  return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)\n}\n\nfunction serializer(replacer, cycleReplacer) {\n  var stack = [], keys = []\n\n  if (cycleReplacer == null) cycleReplacer = function(key, value) {\n    if (stack[0] === value) return \"[Circular ~]\"\n    return \"[Circular ~.\" + keys.slice(0, stack.indexOf(value)).join(\".\") + \"]\"\n  }\n\n  return function(key, value) {\n    if (stack.length > 0) {\n      var thisPos = stack.indexOf(this)\n      ~thisPos ? stack.splice(thisPos + 1) : stack.push(this)\n      ~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key)\n      if (~stack.indexOf(value)) value = cycleReplacer.call(this, key, value)\n    }\n    else stack.push(value)\n\n    return replacer == null ? value : replacer.call(this, key, value)\n  }\n}\n\n\n//# sourceURL=webpack:///./node_modules/json-stringify-safe/stringify.js?");
+
+/***/ }),
+
 /***/ "./node_modules/keymirror/index.js":
 /*!*****************************************!*\
   !*** ./node_modules/keymirror/index.js ***!
@@ -813,6 +824,42 @@ eval("\n\nif (false) {} else {\n  module.exports = __webpack_require__(/*! ./cjs
 
 /***/ }),
 
+/***/ "./node_modules/redux-immutable-state-invariant/dist/index.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/redux-immutable-state-invariant/dist/index.js ***!
+  \********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.default = immutableStateInvariantMiddleware;\n\nvar _invariant = __webpack_require__(/*! invariant */ \"./node_modules/invariant/browser.js\");\n\nvar _invariant2 = _interopRequireDefault(_invariant);\n\nvar _jsonStringifySafe = __webpack_require__(/*! json-stringify-safe */ \"./node_modules/json-stringify-safe/stringify.js\");\n\nvar _jsonStringifySafe2 = _interopRequireDefault(_jsonStringifySafe);\n\nvar _isImmutable = __webpack_require__(/*! ./isImmutable */ \"./node_modules/redux-immutable-state-invariant/dist/isImmutable.js\");\n\nvar _isImmutable2 = _interopRequireDefault(_isImmutable);\n\nvar _trackForMutations = __webpack_require__(/*! ./trackForMutations */ \"./node_modules/redux-immutable-state-invariant/dist/trackForMutations.js\");\n\nvar _trackForMutations2 = _interopRequireDefault(_trackForMutations);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar BETWEEN_DISPATCHES_MESSAGE = ['A state mutation was detected between dispatches, in the path `%s`.', 'This may cause incorrect behavior.', '(http://redux.js.org/docs/Troubleshooting.html#never-mutate-reducer-arguments)'].join(' ');\n\nvar INSIDE_DISPATCH_MESSAGE = ['A state mutation was detected inside a dispatch, in the path: `%s`.', 'Take a look at the reducer(s) handling the action %s.', '(http://redux.js.org/docs/Troubleshooting.html#never-mutate-reducer-arguments)'].join(' ');\n\nfunction immutableStateInvariantMiddleware() {\n  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};\n  var _options$isImmutable = options.isImmutable,\n      isImmutable = _options$isImmutable === undefined ? _isImmutable2.default : _options$isImmutable,\n      ignore = options.ignore;\n\n  var track = _trackForMutations2.default.bind(null, isImmutable, ignore);\n\n  return function (_ref) {\n    var getState = _ref.getState;\n\n    var state = getState();\n    var tracker = track(state);\n\n    var result = void 0;\n    return function (next) {\n      return function (action) {\n        state = getState();\n\n        result = tracker.detectMutations();\n        // Track before potentially not meeting the invariant\n        tracker = track(state);\n\n        (0, _invariant2.default)(!result.wasMutated, BETWEEN_DISPATCHES_MESSAGE, (result.path || []).join('.'));\n\n        var dispatchedAction = next(action);\n        state = getState();\n\n        result = tracker.detectMutations();\n        // Track before potentially not meeting the invariant\n        tracker = track(state);\n\n        result.wasMutated && (0, _invariant2.default)(!result.wasMutated, INSIDE_DISPATCH_MESSAGE, (result.path || []).join('.'), (0, _jsonStringifySafe2.default)(action));\n\n        return dispatchedAction;\n      };\n    };\n  };\n}\n\n//# sourceURL=webpack:///./node_modules/redux-immutable-state-invariant/dist/index.js?");
+
+/***/ }),
+
+/***/ "./node_modules/redux-immutable-state-invariant/dist/isImmutable.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/redux-immutable-state-invariant/dist/isImmutable.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n\nvar _typeof = typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; };\n\nexports.default = isImmutableDefault;\nfunction isImmutableDefault(value) {\n  return (typeof value === 'undefined' ? 'undefined' : _typeof(value)) !== 'object' || value === null || typeof value === 'undefined';\n}\n\n//# sourceURL=webpack:///./node_modules/redux-immutable-state-invariant/dist/isImmutable.js?");
+
+/***/ }),
+
+/***/ "./node_modules/redux-immutable-state-invariant/dist/trackForMutations.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/redux-immutable-state-invariant/dist/trackForMutations.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.default = trackForMutations;\nfunction trackForMutations(isImmutable, ignore, obj) {\n  var trackedProperties = trackProperties(isImmutable, ignore, obj);\n  return {\n    detectMutations: function detectMutations() {\n      return _detectMutations(isImmutable, ignore, trackedProperties, obj);\n    }\n  };\n}\n\nfunction trackProperties(isImmutable) {\n  var ignore = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];\n  var obj = arguments[2];\n  var path = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];\n\n  var tracked = { value: obj };\n\n  if (!isImmutable(obj)) {\n    tracked.children = {};\n\n    for (var key in obj) {\n      var childPath = path.concat(key);\n      if (ignore.length && ignore.indexOf(childPath.join('.')) !== -1) {\n        continue;\n      }\n\n      tracked.children[key] = trackProperties(isImmutable, ignore, obj[key], childPath);\n    }\n  }\n  return tracked;\n}\n\nfunction _detectMutations(isImmutable) {\n  var ignore = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];\n  var trackedProperty = arguments[2];\n  var obj = arguments[3];\n  var sameParentRef = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;\n  var path = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : [];\n\n  var prevObj = trackedProperty ? trackedProperty.value : undefined;\n\n  var sameRef = prevObj === obj;\n\n  if (sameParentRef && !sameRef && !Number.isNaN(obj)) {\n    return { wasMutated: true, path: path };\n  }\n\n  if (isImmutable(prevObj) || isImmutable(obj)) {\n    return { wasMutated: false };\n  }\n\n  // Gather all keys from prev (tracked) and after objs\n  var keysToDetect = {};\n  Object.keys(trackedProperty.children).forEach(function (key) {\n    keysToDetect[key] = true;\n  });\n  Object.keys(obj).forEach(function (key) {\n    keysToDetect[key] = true;\n  });\n\n  var keys = Object.keys(keysToDetect);\n  for (var i = 0; i < keys.length; i++) {\n    var key = keys[i];\n    var childPath = path.concat(key);\n    if (ignore.length && ignore.indexOf(childPath.join('.')) !== -1) {\n      continue;\n    }\n\n    var result = _detectMutations(isImmutable, ignore, trackedProperty.children[key], obj[key], sameRef, childPath);\n\n    if (result.wasMutated) {\n      return result;\n    }\n  }\n  return { wasMutated: false };\n}\n\n//# sourceURL=webpack:///./node_modules/redux-immutable-state-invariant/dist/trackForMutations.js?");
+
+/***/ }),
+
 /***/ "./node_modules/redux-logger/dist/redux-logger.js":
 /*!********************************************************!*\
   !*** ./node_modules/redux-logger/dist/redux-logger.js ***!
@@ -1046,7 +1093,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var redu
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ \"./node_modules/redux/es/redux.js\");\n/* harmony import */ var redux_logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! redux-logger */ \"./node_modules/redux-logger/dist/redux-logger.js\");\n/* harmony import */ var redux_logger__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(redux_logger__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var redux_thunk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! redux-thunk */ \"./node_modules/redux-thunk/es/index.js\");\n/* harmony import */ var _reducers_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../reducers/index */ \"./public/js/reducers/index.js\");\n\n\n\n\nvar logger = Object(redux_logger__WEBPACK_IMPORTED_MODULE_1__[\"createLogger\"])({\n  collapsed: true\n});\nvar store = Object(redux__WEBPACK_IMPORTED_MODULE_0__[\"createStore\"])(_reducers_index__WEBPACK_IMPORTED_MODULE_3__[\"default\"], Object(redux__WEBPACK_IMPORTED_MODULE_0__[\"applyMiddleware\"])(redux_thunk__WEBPACK_IMPORTED_MODULE_2__[\"default\"], logger));\n/* harmony default export */ __webpack_exports__[\"default\"] = (store);\n\n//# sourceURL=webpack:///./public/js/stores/configureStore.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ \"./node_modules/redux/es/redux.js\");\n/* harmony import */ var redux_logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! redux-logger */ \"./node_modules/redux-logger/dist/redux-logger.js\");\n/* harmony import */ var redux_logger__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(redux_logger__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var redux_thunk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! redux-thunk */ \"./node_modules/redux-thunk/es/index.js\");\n/* harmony import */ var _reducers_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../reducers/index */ \"./public/js/reducers/index.js\");\n/* harmony import */ var redux_immutable_state_invariant__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! redux-immutable-state-invariant */ \"./node_modules/redux-immutable-state-invariant/dist/index.js\");\n/* harmony import */ var redux_immutable_state_invariant__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(redux_immutable_state_invariant__WEBPACK_IMPORTED_MODULE_4__);\nfunction _typeof(obj) { if (typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; }; } return _typeof(obj); }\n\n\n\n\n\n\nvar logger = Object(redux_logger__WEBPACK_IMPORTED_MODULE_1__[\"createLogger\"])({\n  collapsed: true\n});\nvar composeEnhancers = (typeof window === \"undefined\" ? \"undefined\" : _typeof(window)) === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;\nvar enhancer = composeEnhancers(Object(redux__WEBPACK_IMPORTED_MODULE_0__[\"applyMiddleware\"])(redux_thunk__WEBPACK_IMPORTED_MODULE_2__[\"default\"], logger, redux_immutable_state_invariant__WEBPACK_IMPORTED_MODULE_4___default()()));\nvar store = Object(redux__WEBPACK_IMPORTED_MODULE_0__[\"createStore\"])(_reducers_index__WEBPACK_IMPORTED_MODULE_3__[\"default\"], enhancer // applyMiddleware(thunk, logger)\n);\n/* harmony default export */ __webpack_exports__[\"default\"] = (store);\n\n//# sourceURL=webpack:///./public/js/stores/configureStore.js?");
 
 /***/ })
 
