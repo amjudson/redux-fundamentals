@@ -1,7 +1,5 @@
 import React from 'react';
-import axios from 'axios';
 import { connect } from 'react-redux';
-import debounce from 'lodash.debounce';
 import FeesTable from '../components/FeesTable';
 import * as actions from '../actions/actions';
 
